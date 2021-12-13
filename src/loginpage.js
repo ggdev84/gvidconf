@@ -18,7 +18,7 @@ export default function Loginpage({match}){
                     <Route path="/login" element={<Login />}/>
                     <Route path="/register" element={<Register/>}/>
                     <Route path="/recover/*" element={<Recover/>}/>
-                    <Route path="/recover" element={<Recover/>}/>
+                    <Route path="/recover" exact element={<Recover/>}/>
                     <Route path="" exact element={<Login/>}/>
 
                 </Routes>

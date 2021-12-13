@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { Routes, Route } from "react-router-dom"
-
+import Test from "./test"
 
 
 export default function Recover(){
@@ -19,29 +19,20 @@ export default function Recover(){
             </h3>
             <Routes>
 
-                <Route path="/recover/newpassword" element={
+                <Route path="" exact element={
+                    <form>
+                        <input type="email" placeholder="Email" value={email} onChange={(e)=>{setemail(e.target.value)}} />
+                        <button>Get code</button>
+                    </form>
+                }/>
+
+                <Route path="/newpassword*" element={
                     <form>
                         <input type="email" placeholder="Email" value={email} onChange={(e)=>{setemail(e.target.value)}} />
                         <input type="text" placeholder="Recover code" value={code} onChange={(e)=>{setcode(e.target.value)}}  />
                         <input type="password" placeholder="Password" value={password} onChange={(e)=>{setpassword(e.target.value)}}  />
                         <input type="password" placeholder="Confirm password" value={confirmpassword} onChange={(e)=>{setconfirmpassword(e.target.value)}}  />
                         <button>Recover</button>
-                    </form>
-                }/>
-
-
-                <Route path="/recover/*" element={
-                    <form>
-                        <input type="email" placeholder="Email" value={email} onChange={(e)=>{setemail(e.target.value)}} />
-                        <button>Get code </button>
-                    </form>
-                }/>
-
-
-                <Route path="/recover" exact element={
-                    <form>
-                        <input type="email" placeholder="Email" value={email} onChange={(e)=>{setemail(e.target.value)}} />
-                        <button>Get code </button>
                     </form>
                 }/>
 

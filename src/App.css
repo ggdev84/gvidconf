@@ -1,0 +1,147 @@
+@keyframes landingpageanim{
+  0%{
+    opacity:0;
+  }
+  60%{
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
+}
+
+
+
+body{
+  padding:0;
+  margin:0;
+  --maincolor:#004F89;
+  
+}
+
+
+body *{
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  outline: none;
+}
+
+.App{
+  margin:0;
+  padding:0;
+  height:100vh;
+  width:100%;
+}
+
+.loginpage{
+  height:100vh;
+  width:100%;
+  margin:0;
+  padding: 0;
+  background-color: var(--maincolor);  
+}
+
+.loginpage{
+  text-align: center;
+}
+
+.loginpage h1{
+  color:white;
+  font-weight: 500;
+  font-size: 30px;
+  padding:0;
+  padding-top:60px;
+  margin:0;
+  animation: landingpageanim 0.2s 0s linear;
+  line-height: 30px;
+}
+
+.loginpage h1 img{
+  width:35px;
+  height:35px;
+  margin:0;
+  padding:0;
+}
+
+.loginpage h2{
+  color:white;
+  font-weight: 400;
+  font-size: 23px;
+  animation: landingpageanim 0.4s 0s linear;
+
+}
+
+.banner{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width:80%;
+  margin:90px auto;
+}
+
+.banner img{
+  width:50%;
+  flex:1;
+  margin:0;
+  padding:0;
+  border-radius: 10px;
+  animation: landingpageanim 0.7s 0s linear;
+}
+
+.logindiv{
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex:1;
+  animation: landingpageanim 1s 0s linear;
+
+}
+
+.logindiv h3{
+  color:white;
+  font-weight: 400;
+  font-size:25px;
+  margin-bottom: 50px;
+}
+
+.logindiv h3 img{
+  height:25px;
+  width:25px;
+  margin-right: 10px;
+}
+
+.logindiv form{
+  display: flex;
+  flex-direction: column;
+  width:100%;
+}
+
+.logindiv form input, .logindiv form button{
+  border:1px solid white;
+  width:50%;
+  height:40px;
+  text-align: center;
+  margin:15px auto;
+  font-size: 20px;
+  border-radius: 200px;
+  background-color: transparent;
+  color:white;
+}
+
+.logindiv input::placeholder{
+  color:gainsboro;
+}
+
+.logindiv form button{
+  background-color: white;
+  color:var(--maincolor);
+  cursor: pointer;
+  border:none;
+  height:45px;
+  width:35%;
+  margin-top: 30px;
+}
+
+.logindiv a{
+  color:white;
+  margin-top: 10px;
+}

@@ -9,7 +9,7 @@ export default function Loginpage({match}){
 
     return(
         <div className="loginpage">
-            <h1><img src={require("./images/logoicon.svg").default} alt="Logo"/>Vidconf</h1>
+            <h1><img src={require("./images/logoicon.svg").default} alt="Logo"/>gvidconf</h1>
             <h2>Self-hosted open-source videoconference tool.</h2>
             <div className="banner">
                 <img src={require("./images/screenshot.png").default} alt="Screenshot"/>

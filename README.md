@@ -1,1 +1,1 @@
-Gconf is a self-hosted open-source videoconference and messaging tool.
+Vidconf is a self-hosted open-source videoconference and messaging tool.

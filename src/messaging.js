@@ -3,6 +3,7 @@ import React, { useState } from "react"
 export default function Messaging(){
 
     const [current, setcurrent] = useState({})
+    const [display, setdisplay] = useState(false)
 
     let data = [
         {
@@ -85,9 +86,18 @@ export default function Messaging(){
 
     return(
         <div className="messaging">
+
+            <div className="modal" style={{display:display===true?"block":"none"}} onClick={()=>{setdisplay(false)}}>
+                <div className="modalcontent" onClick={(e)=>{e.stopPropagation()}}>
+                    <button className="close" onClick={()=>{setdisplay(false)}}>x</button>
+                    <input type="text" placeholder="Search people"/>
+                </div>
+            </div>
+
             <div className="mainmenu">
                 <h1><img src={require("./images/logoicon.svg").default} alt="icon"/> Gvidconf</h1>
                 <h3>Gorkem</h3>
+                <button className="addcontact" onClick={()=>{setdisplay(true)}}>+</button>
                 <div className="contactlist">
                     {
                         data.map(i=>{

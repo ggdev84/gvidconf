@@ -2,10 +2,24 @@ const express = require("express")
 const mongo = require("mongodb").MongoClient
 const url = "mongodb://localhost:27017"
 const bcrypt = require("bcrypt")
+const cors = require("cors")
+const session = require("express-session")
+const connect = require("connect-mongo")
 
 const app = express()
 
 app.use(express.json())
+app.use(cors())
+
+app.use(session({
+    store:connect.create({
+        mongoUrl:url,
+        dbName:"gvidconfsessions"
+    }),
+    secret:"1df85zed85ezd2f52e9dz5ed",
+    resave:false,
+    saveUninitialized:false
+}))
 
 
 var generatetoken = (length) => {
@@ -101,7 +115,15 @@ app.post("/login", (req,res)=>{
                                 if(err){res.status(200).end("Server error. Please try later.")}
                                 else{
                                     if(same){
-                                        res.status(200).end("You are connected !")
+                                        req.session.loggedin = true
+                                        req.session.email = user.email
+                                        req.session.friends = user.friends
+                                        req.session.name = user.name
+                                        req.session.token = user.token
+
+                                        console.log(req.session.loggedin)
+
+                                        res.status(200).end("logged in")
                                     }
                                     else{
                                         res.status(200).end("Password is incorrect")
@@ -119,6 +141,22 @@ app.post("/login", (req,res)=>{
     }
     else{
         res.status(200).end("Please fill all the fields")
+    }
+})
+
+app.get("/getdata", (req,res)=>{
+    console.log(req.session)
+    if(req.session.loggedin === true){
+        let data={
+            email : req.session.email,
+            friends : req.session.friends, 
+            name : req.session.name,
+            token : req.session.token 
+        }
+        res.status(200).end(JSON.stringify({data}))
+    }
+    else{
+        res.status(200).end("You are not logged in.")
     }
 })
 

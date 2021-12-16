@@ -5,6 +5,24 @@ export default function Login(){
     const [email, setemail] = useState("")
     const [password, setpassword] = useState("")
 
+    let loginfn = (e)=>{
+        e.preventDefault()
+        fetch("http://localhost:8080/login",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                email,
+                password
+            })
+        })
+        .then(data=>data.text())
+        .then(data=>{
+            if(data.includes("logged in"))
+                window.location = "http://localhost:3000/main"
+        })
+        .catch(err=>alert(err))
+    }
+
     return(
         <div className="logindiv">
             <h3>
@@ -14,7 +32,7 @@ export default function Login(){
             <form>
                 <input type="email" placeholder="Email" value={email} onChange={(e)=>{setemail(e.target.value)}} />
                 <input type="password" placeholder="Password" value={password} onChange={(e)=>{setpassword(e.target.value)}}  />
-                <button>Log in</button>
+                <button onClick={(e)=>{loginfn(e)}}>Log in</button>
             </form>
             <a href="/register">Don't have an account ? Register.</a>
             <a href="/recover">Recover your password</a>

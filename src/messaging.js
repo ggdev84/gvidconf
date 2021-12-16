@@ -1,11 +1,12 @@
 import React, { useState } from "react"
 
-export default function Messaging(){
+export default function Messaging({data}){
 
     const [current, setcurrent] = useState({})
     const [display, setdisplay] = useState(false)
+    const [userdata, setuserdata] = useState(data)
 
-    let data = [
+    let data2 = [
         {
             name:"Emma",
             status:"online",
@@ -100,7 +101,7 @@ export default function Messaging(){
                 <button className="addcontact" onClick={()=>{setdisplay(true)}}>+</button>
                 <div className="contactlist">
                     {
-                        data.map(i=>{
+                        data2.map(i=>{
                             return(
                                 <div className="contact" onClick={()=>{setcurrent(i)}}>
                                     <div className="imgdiv">

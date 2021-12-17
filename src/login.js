@@ -7,7 +7,7 @@ export default function Login(){
 
     let loginfn = (e)=>{
         e.preventDefault()
-        fetch("http://localhost:8080/login",{
+        fetch("/login",{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify({
@@ -18,7 +18,7 @@ export default function Login(){
         .then(data=>data.text())
         .then(data=>{
             if(data.includes("logged in"))
-                window.location = "http://localhost:3000/main"
+                window.location = window.location.replace("/login","/main")
         })
         .catch(err=>alert(err))
     }

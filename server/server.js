@@ -8,18 +8,23 @@ const connect = require("connect-mongo")
 
 const app = express()
 
-app.use(express.json())
-app.use(cors())
-
 app.use(session({
     store:connect.create({
         mongoUrl:url,
         dbName:"gvidconfsessions"
     }),
     secret:"1df85zed85ezd2f52e9dz5ed",
-    resave:false,
-    saveUninitialized:false
+    resave:true,
+    saveUninitialized:false,
+    cookie:{
+        secure:false
+    }
 }))
+
+app.use(express.json())
+app.use(cors())
+
+
 
 
 var generatetoken = (length) => {
@@ -121,7 +126,7 @@ app.post("/login", (req,res)=>{
                                         req.session.name = user.name
                                         req.session.token = user.token
 
-                                        console.log(req.session.loggedin)
+                                        console.log(req.session)
 
                                         res.status(200).end("logged in")
                                     }
@@ -153,11 +158,18 @@ app.get("/getdata", (req,res)=>{
             name : req.session.name,
             token : req.session.token 
         }
-        res.status(200).end(JSON.stringify({data}))
+        res.status(200).end(JSON.stringify(data))
     }
     else{
         res.status(200).end("You are not logged in.")
     }
 })
+
+
+app.get("/logout", (req,res)=>{
+    req.session.destroy()
+    res.status(200).end("logged out")
+})
+
 
 app.listen(8080)

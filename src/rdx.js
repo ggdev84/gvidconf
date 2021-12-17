@@ -11,3 +11,13 @@ export const mainwindow = (state="home", action)=>{
     }
     return state
 }
+
+export const userdata = (state={userdata:{friends:[]}}, action)=>{
+    if(action.type==="CHANGEUSERDATA"){
+        state={
+            ...state,
+            userdata:action.payload
+        }
+    }
+    return state
+}

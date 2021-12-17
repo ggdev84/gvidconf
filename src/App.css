@@ -206,11 +206,27 @@ body *{
   cursor: pointer;
 }
 
+.logout{
+  color:white;
+  background-color: darkred;
+  border:none;
+  cursor: pointer;
+  border-radius: 200px;
+  font-size: 17px;
+  padding:5px 20px;
+  margin:0px auto 20px auto;
+}
+
 .contactlist{
   width:90%;
   padding:10px 5%;
-  height:72%;
+  height:65%;
   overflow-y: auto;
+}
+
+.contactlist p{
+  color:white;
+  margin-top: 60px;
 }
 
 .contact{

@@ -1,10 +1,21 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
+import { useSelector } from "react-redux"
 
-export default function Messaging({data}){
+export default function Messaging(){
+
+    let logout = ()=>{
+        fetch("/logout")
+        .then(data=>data.text())
+        .then(data=>{
+            if(data.includes("logged out")){
+                window.location = "http://localhost:3000/"
+            }
+        })
+    }
 
     const [current, setcurrent] = useState({})
     const [display, setdisplay] = useState(false)
-    const [userdata, setuserdata] = useState(data)
+
 
     let data2 = [
         {
@@ -85,6 +96,9 @@ export default function Messaging({data}){
         }
     ]
 
+    let userdata = useSelector(state=>state.userdata.userdata)
+
+
     return(
         <div className="messaging">
 
@@ -97,10 +111,12 @@ export default function Messaging({data}){
 
             <div className="mainmenu">
                 <h1><img src={require("./images/logoicon.svg").default} alt="icon"/> Gvidconf</h1>
-                <h3>Gorkem</h3>
+                <h3>{userdata.name}</h3>
+                <button className="logout" onClick={logout}>Log out</button><br/>
                 <button className="addcontact" onClick={()=>{setdisplay(true)}}>+</button>
                 <div className="contactlist">
                     {
+                        userdata.friends.length !== 0 ?
                         data2.map(i=>{
                             return(
                                 <div className="contact" onClick={()=>{setcurrent(i)}}>
@@ -114,6 +130,8 @@ export default function Messaging({data}){
                                 </div>
                             )
                         })
+                        :
+                        <p>You have no contacts.</p>
                     }
                 </div>
 

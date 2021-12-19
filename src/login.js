@@ -19,6 +19,8 @@ export default function Login(){
         .then(data=>{
             if(data.includes("logged in"))
                 window.location = window.location.replace("/login","/main")
+            else
+                alert(data)
         })
         .catch(err=>alert(err))
     }

@@ -197,30 +197,30 @@ body *{
   padding-top: 10px;
 }
 
-.addcontact{
-  font-size: 20px;
-  width:50px;
-  height:50px;
-  border-radius: 200px;
-  border:1px solid white;
-  cursor: pointer;
+.mainmenubtns{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin:50px auto;
+
 }
 
-.logout{
-  color:white;
-  background-color: darkred;
-  border:none;
+.mainmenubtns button{
+  flex:1;
+  height:40px;
   cursor: pointer;
-  border-radius: 200px;
-  font-size: 17px;
-  padding:5px 20px;
-  margin:0px auto 20px auto;
+  border:none;
+  background-color: transparent;
+} 
+
+.mainmenubtns button img{
+  height:100%;
 }
 
 .contactlist{
   width:90%;
   padding:10px 5%;
-  height:65%;
+  height:64%;
   overflow-y: auto;
 }
 
@@ -325,6 +325,7 @@ body *{
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  border:1px solid rgb(190, 190, 190);
 }
 
 .messages .empty{
@@ -412,6 +413,7 @@ body *{
   height:100%;
   background-color: rgb(240, 240, 240);
   border-radius: 10px;
+  border:1px solid rgb(190, 190, 190);
 }
 
 
@@ -457,6 +459,16 @@ body *{
 
 }
 
+.modalcontent div{
+  width: 100%;
+}
+
+.search h1, .settings h1, .contacts h1{
+  color:var(--maincolor);
+  font-weight: 400;
+  font-size: 30px;
+}
+
 .modalcontent input{
   margin-top: 100px;
   width:50%;
@@ -476,4 +488,53 @@ body *{
 
 .call p{
   margin:0;
+}
+
+.modalcontent .receivedfriendsrequestdiv{
+  margin:40px auto;
+}
+
+.receivedfriendsrequestdiv h2{
+  color:black;
+  font-weight: 500;
+  margin-bottom: 40px;
+  font-size: 22px;
+}
+
+.modalcontent .receivedfriendsrequest{
+  background-color: gainsboro;
+  width:70%;
+  margin: 20px auto;
+  border-radius: 10px;
+  padding:5px 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.modalcontent .receivedfriendsrequest h2{
+  color:black;
+  font-weight: 400;
+}
+
+.receivedfriendsrequest p{
+  flex:1.8;
+  text-align: left;
+}
+
+.receivedfriendsrequest button{
+  flex:0.1;
+  margin:0 2px;
+  padding:0 10px;
+  border:none;
+  cursor: pointer;
+  color:white;
+  border-radius: 5px;
+}
+
+.receivedfriendsrequest .acceptfriend{
+  background-color: var(--maincolor);
+}
+
+.receivedfriendsrequest .rejectfriend{
+  background-color: darkred;
 }

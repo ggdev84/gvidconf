@@ -10,14 +10,12 @@ import { changeruserdata } from './actions';
 
 function App() {
 
-  let dispatch = useDispatch()
 
   useEffect(()=>{
-    fetch("/getdata")
+    fetch("/amiloggedin")
     .then(data=>data.text())
     .then(data=>{
-        if(data.includes("{")){
-            dispatch(changeruserdata(JSON.parse(data)))
+        if(data.includes("logged in")){
             if(window.location.href.includes("/main") ===false){
               window.location =  "http://localhost:3000/main"
             }

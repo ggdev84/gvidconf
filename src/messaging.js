@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
+import Contacts from "./contacts"
+import Search from "./search"
+import Settings from "./settings"
 
 export default function Messaging(){
 
@@ -8,13 +11,14 @@ export default function Messaging(){
         .then(data=>data.text())
         .then(data=>{
             if(data.includes("logged out")){
-                window.location = "http://localhost:3000/"
+                window.location = new URL("http://localhost:3000/")
             }
         })
     }
 
     const [current, setcurrent] = useState({})
-    const [display, setdisplay] = useState(false)
+    const [display, setdisplay] = useState(true)
+    const [page, setpage] = useState("contacts")
 
 
     let data2 = [
@@ -98,6 +102,16 @@ export default function Messaging(){
 
     let userdata = useSelector(state=>state.userdata.userdata)
 
+    let win 
+    if(page === "search")
+        win=<Search/>
+    else if(page==="settings")
+        win=<Settings/>
+    else if(page==="contacts")
+        win=<Contacts receivedFriendsRequests={userdata.receivedFriendsRequests} friends={userdata.friends} />
+    else
+        win=<Search/>
+
 
     return(
         <div className="messaging">
@@ -105,15 +119,32 @@ export default function Messaging(){
             <div className="modal" style={{display:display===true?"block":"none"}} onClick={()=>{setdisplay(false)}}>
                 <div className="modalcontent" onClick={(e)=>{e.stopPropagation()}}>
                     <button className="close" onClick={()=>{setdisplay(false)}}>x</button>
-                    <input type="text" placeholder="Search people"/>
+                    {win}
                 </div>
             </div>
 
             <div className="mainmenu">
                 <h1><img src={require("./images/logoicon.svg").default} alt="icon"/> Gvidconf</h1>
                 <h3>{userdata.name}</h3>
-                <button className="logout" onClick={logout}>Log out</button><br/>
-                <button className="addcontact" onClick={()=>{setdisplay(true)}}>+</button>
+                <div className="mainmenubtns">
+
+                    <button onClick={logout} >
+                        <img src={require("./images/logout.png").default} alt="Logout"/>
+                    </button>
+
+                    <button onClick={()=>{setpage("settings"); setdisplay(true)}}>
+                        <img src={require("./images/settings.png").default} alt="Settings"/>
+                    </button>
+
+                    <button onClick={()=>{setpage("contacts"); setdisplay(true)}}>
+                        <img style={{backgroundColor:userdata.receivedFriendsRequests.length >0?"darkred":"transparent"}} src={require("./images/contacts.png").default} alt="Contacts"/>
+                    </button>
+
+                    <button onClick={()=>{setpage("search"); setdisplay(true)}}>
+                        <img src={require("./images/add.png").default} alt="Add"/>
+                    </button>
+                </div>
+
                 <div className="contactlist">
                     {
                         userdata.friends.length !== 0 ?
@@ -131,7 +162,7 @@ export default function Messaging(){
                             )
                         })
                         :
-                        <p>You have no contacts.</p>
+                        <p>You have no conversations.</p>
                     }
                 </div>
 

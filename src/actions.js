@@ -1,6 +1,6 @@
 export const changeruserdata = (data)=>{
     return {
-        type:"CHANGERUSERDATA",
+        type:"CHANGEUSERDATA",
         payload:data
     }
 }

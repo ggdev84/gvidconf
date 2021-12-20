@@ -157,8 +157,21 @@ app.get("/getdata", (req,res)=>{
     console.log(req.session)
     if(req.session.loggedin === true){
         // Get all data
-
-        res.status(200).end(JSON.stringify(data))
+        mongo.connect(url, (err, result)=>{
+            if(err){res.status(200).end("Server error. Please try later.")}
+            else{
+                var db = result.db("gvidconf")
+                db.collection("users").findOne({token:req.session.token}, (err, user)=>{
+                    if(err){res.status(200).end("Server error. Please try later.")}
+                    else{
+                        let obj={...user}
+                        delete obj._id
+                        delete obj.password
+                        res.status(200).end(JSON.stringify(obj))
+                    }
+                })
+            }
+        })
     }
     else{
         res.status(200).end("You are not logged in.")
@@ -229,7 +242,22 @@ app.post("/acceptfriend", (req,res)=>{
                                 db.collection("users").updateOne({token:req.session.token}, {$push:{friends:{token, name}}}, (err, pushed)=>{
                                     if(err){res.status(200).end("Server error. Please try later.")}
                                     else{
-                                        res.status(200).end("Friend request accepted.")
+                                        db.collection("users").updateOne({token},{$pull:{"sentFriendsRequests":req.session.token}}, (err, removed)=>{
+                                            if(err){res.status(200).end("Server error. Please try later.")}
+                                            else{
+                                                db.collection("users").updateOne({token:req.session.token}, {$pull:{receivedFriendsRequests:{token}}}, (err, removed2)=>{
+                                                    if(err){res.status(200).end("Server error. Please try later.")}
+                                                    else{
+                                                        db.collection("users").updateOne({token:token}, {$push:{friends:{token:req.session.token, name:req.session.name}}}, (err, pushed2)=>{
+                                                            if(err){res.status(200).end("Server error. Please try later.")}
+                                                            else{
+                                                                res.status(200).end("Friend request accepted.")
+                                                            }
+                                                        })
+                                                    }
+                                                })
+                                            }
+                                        })
                                     }
                                 })
                             }
@@ -247,7 +275,102 @@ app.post("/acceptfriend", (req,res)=>{
     }
 })
 
+app.post("/getallcontacts", (req,res)=>{
+    if(req.session.loggedin===true){
+        if("search" in req.body){
+            let search = req.body.search
+            console.log(search)
+            mongo.connect(url,(err, result)=>{
+                if(err){res.status(200).end("Server error. Please try later.")}
+                else{
+                    var db = result.db("gvidconf")
+                    //{$or:[{name:/.*search.*/i}, {token:/.*search.*/i}]}
+                    db.collection("users").find({
+                        $or:[
+                            {name:{$regex:search, $options:"i"}},
+                            {token:{$regex:search, $options:"i"}}
+                        ]
+                        }, {projection:{_id:0,name:1, token:1}}).toArray((err, list)=>{
+                        if(err){res.status(200).end("Server error. Please try later.")}
+                        else{
+                            console.log(list)
+                            res.status(200).end(JSON.stringify({userslist:list}))
+                        }
+                    })
+                }
+            })
+        }
+        else{
+            res.status(200).end("Please enter a name or token.")
+        }
 
+    }
+    else{
+        res.status(200).end("You are not logged in.")
+    }
+})
+
+app.post("/deletefriend", (req,res)=>{
+    if(req.session.loggedin ===true){
+        if("token" in req.body){
+            let token = req.body.token
+            mongo.connect(url, (err, result)=>{
+                if(err){res.status(200).end("Server error. Please try later.")}
+                else{
+                    var db = result.db("gvidconf")
+                    db.collection("users").updateOne({token:req.session.token}, {$pull:{friends:{token}}}, (err, deleted)=>{
+                        if(err){res.status(200).end("Server error. Please try later.")}
+                        else{
+                            db.collection("users").updateOne({token}, {$pull:{friends:{token:req.session.token}}}, (err, deleted2)=>{
+                                if(err){res.status(200).end("Server error. Please try later.")}
+                                else{
+                                    res.status(200).end("Friend deleted.")
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+        else{
+            res.status(200).end("Please enter a token.")
+        }
+    }
+    else{
+        res.status(200).end("You are not logged in.")
+    }
+})
+
+app.post("/rejectfriend", (req,res)=>{
+    if(req.session.loggedin ===true){
+        if("token" in req.body){
+            let token = req.body.token
+            mongo.connect(url, (err, result)=>{
+                if(err){res.status(200).end("Server error. Please try later.")}
+                else{
+                    var db = result.db("gvidconf")
+                    db.collection("users").updateOne({token:req.session.token}, {$pull:{receivedFriendsRequests:{token}}}, (err, deleted)=>{
+                        if(err){res.status(200).end("Server error. Please try later.")}
+                        else{
+                            db.collection("users").updateOne({token}, {$pull:{sentFriendsRequests:req.session.token}}, (err, deleted2)=>{
+                                if(err){res.status(200).end("Server error. Please try later.")}
+                                else{
+                                    res.status(200).end("Friend request rejected.")
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+        else{
+            res.status(200).end("Please enter a token.")
+        }
+    }
+    else{
+        res.status(200).end("You are not logged in.")
+    }
+})
 
 
 

@@ -31,3 +31,10 @@ export const userdata = (state={userdata:tmpuserdata}, action)=>{
     }
     return state
 }
+
+export const update = (state=0, action)=>{
+    if(action.type ==="UPDATE"){
+        state+=1
+    }
+    return state
+}

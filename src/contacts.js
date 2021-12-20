@@ -1,6 +1,9 @@
 import React from "react"
+import { useDispatch } from "react-redux"
 
 export default function Contacts({receivedFriendsRequests, friends}){
+
+    let dispatch = useDispatch()
 
     let acceptfriend=(i)=>{
         fetch("/acceptfriend",{
@@ -12,7 +15,41 @@ export default function Contacts({receivedFriendsRequests, friends}){
             })
         })
         .then(data=>data.text())
-        .then(data=>alert(data))
+        .then(data=>{
+            dispatch({type:"UPDATE"})
+            alert(data)
+        })
+    }
+
+    let deletefriend = (i)=>{
+        fetch("/deletefriend", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                token:i.token
+            })
+        })
+        .then(data=>data.text())
+        .then(data=>{
+            dispatch({type:"UPDATE"})
+            alert(data)
+        })
+
+    }
+
+    let rejectfriend = (i)=>{
+        fetch("/rejectfriend", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({
+                token:i.token
+            })
+        })
+        .then(data=>data.text())
+        .then(data=>{
+            dispatch({type:"UPDATE"})
+            alert(data)
+        })
     }
 
     return(
@@ -27,7 +64,7 @@ export default function Contacts({receivedFriendsRequests, friends}){
                             return(
                                 <div className="receivedfriendsrequest">
                                     <p>{i.name +`  (${i.token})`}</p>
-                                    <button className="rejectfriend"  >Reject</button>
+                                    <button className="rejectfriend" onClick={()=>{rejectfriend(i)}} >Reject</button>
                                     <button className="acceptfriend" onClick={()=>{acceptfriend(i)}} >Accept</button>
                                 </div>
                             )
@@ -44,7 +81,7 @@ export default function Contacts({receivedFriendsRequests, friends}){
                             return(
                                 <div className="receivedfriendsrequest">
                                     <p>{i.name +`  (${i.token})`}</p>
-                                    <button className="rejectfriend">Delete</button>
+                                    <button className="rejectfriend" onClick={()=>{deletefriend(i)}}>Delete</button>
                                     <button className="acceptfriend">Start</button>
                                 </div>
                             )

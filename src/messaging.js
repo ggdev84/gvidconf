@@ -17,8 +17,8 @@ export default function Messaging(){
     }
 
     const [current, setcurrent] = useState({})
-    const [display, setdisplay] = useState(true)
-    const [page, setpage] = useState("contacts")
+    const [display, setdisplay] = useState(false)
+    const [page, setpage] = useState("search")
 
 
     let data2 = [

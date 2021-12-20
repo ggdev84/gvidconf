@@ -3,12 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {userdata} from "./rdx"
+import {userdata, update} from "./rdx"
 import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 
 let reducers = combineReducers({
-  userdata
+  userdata,
+  update
 })
 let store = createStore(reducers)
 

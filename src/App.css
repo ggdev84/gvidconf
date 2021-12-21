@@ -236,43 +236,37 @@ body *{
   height:80px;
   background-color: rgb(235, 235, 235);
   margin:20px 0;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   border-radius: 10px;
   transition: all 0.2s ease-out;
 }
 
-.contact .imgdiv, .contact p, .contact .status{
-  flex:1;
-}
-
 .contact .imgdiv{
-  text-align: left;
-}
-
-.contact img{
-  height:60px;
-  width:60px;
-  border-radius: 200px;
-  margin-left: 10px;
-}
-
-.contact .status{
-  text-align: right;
+  height:100%;
+  flex:1;
   display: flex;
-  justify-content: right;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.contact .status div{
-  width:20%;
-  height:70px;
-  margin-right: 7px;
-  border-radius: 0 10px 10px 0;
+.contact .imgdiv img{
+  height:60%;
+  padding:10px;
+  background-color: var(--maincolor);
+  border-radius: 200px;
 }
 
 .contact p{
   color:var(--maincolor);
-  font-size: 18px;
+  font-size: 22px;
+  height:100%;
+  padding:0;
+  margin:0;
+  line-height: 80px;
+  flex:0.8;
+  text-align: left;
 }
 
 .contact:hover{

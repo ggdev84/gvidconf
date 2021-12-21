@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import Contacts from "./contacts"
 import Search from "./search"
 import Settings from "./settings"
 import sockioclient from "socket.io-client"
+import * as actions from "./actions"
 
 export default function Messaging(){
 
+    let dispatch = useDispatch()
+    let sock = useSelector(state=>state.sock.sock)
+    let userdata = useSelector(state=>state.userdata.userdata)
 
 
     let logout = ()=>{
@@ -24,21 +28,27 @@ export default function Messaging(){
     const [page, setpage] = useState("search")
     const [reconnect, setreconnect] = useState(0)
     const [msg, setmsg] = useState("")
-    const [sock, setsock] = useState({})
+
 
     useEffect(()=>{
-        const socket = sockioclient()
+        const socket = sockioclient() 
         socket.on("connection", ()=>{
             alert("Connected")
         })
         socket.on("message", (msg)=>{
-            alert(msg)
+            if(msg.includes("{")){
+                let m = JSON.parse(msg).content
+                alert(m)
+            }
+            else{
+                alert(msg)
+            }
         })
-        setsock(socket)
-        console.log(sock)
+        dispatch(actions.changesock(socket))
     }, [reconnect])
 
 
+    
     let sendmessage = ()=>{
         let obj = {
             content:msg,
@@ -47,9 +57,10 @@ export default function Messaging(){
         }
         sock.emit("message", JSON.stringify(obj))
     }
+    
+    
 
 
-    let userdata = useSelector(state=>state.userdata.userdata)
 
     let win 
     if(page === "search")
@@ -57,9 +68,10 @@ export default function Messaging(){
     else if(page==="settings")
         win=<Settings/>
     else if(page==="contacts")
-        win=<Contacts receivedFriendsRequests={userdata.receivedFriendsRequests} friends={userdata.friends} sock={sock} />
+        win=<Contacts receivedFriendsRequests={userdata.receivedFriendsRequests} friends={userdata.friends} />
     else
         win=<Search/>
+
 
     let conversations = []
     userdata.messages.forEach(i=>{
@@ -67,9 +79,11 @@ export default function Messaging(){
         if(found===undefined)
             conversations.push({name:i.otherName, token:i.otherToken})
     })
+    
 
     let messages = userdata.messages.filter(i=>i.otherToken === current.token)
 
+    
 
     return(
         <div className="messaging">
@@ -108,11 +122,11 @@ export default function Messaging(){
                         conversations.length !== 0 ?
                         conversations.map(i=>{
                             return(
-                                <div className="contact" onClick={()=>{setcurrent(i.token)}}>
+                                <div className="contact" onClick={()=>{setcurrent(i)}}>
                                     <div className="imgdiv">
-                                        <h1>{i.name.split()[0]}</h1>
+                                        <img src={require("./images/user.png").default} alt="User : "/>
                                     </div>
-                                    <p>{i}</p>
+                                    <p>{i.name}</p>
 {/*                                    <div className="status">
                                         <div  style={{backgroundColor:i.status==="online" ? "#004F89":"gray"}}></div>
                             </div>*/}

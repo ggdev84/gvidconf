@@ -1,7 +1,13 @@
-export const changeruserdata = (data)=>{
+export const changeruserdata = (payload)=>{
     return {
         type:"CHANGEUSERDATA",
-        payload:data
+        payload
     }
 }
 
+export const changesock = (payload)=>{
+    return{
+        type:"CHANGESOCK",
+        payload
+    }
+}

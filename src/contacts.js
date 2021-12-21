@@ -1,9 +1,10 @@
 import React from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
-export default function Contacts({receivedFriendsRequests, friends, sock, current}){
+export default function Contacts({receivedFriendsRequests, friends}){
 
     let dispatch = useDispatch()
+    let sock = useSelector(state=>state.sock.sock)
 
     let acceptfriend=(i)=>{
         fetch("/acceptfriend",{

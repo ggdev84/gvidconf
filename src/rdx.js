@@ -38,3 +38,13 @@ export const update = (state=0, action)=>{
     }
     return state
 }
+
+export const sock = (state={sock:{}}, action)=>{
+    if(action.type==="CHANGESOCK"){
+        state={
+            ...state,
+            sock:action.payload
+        }
+    }
+    return state
+}

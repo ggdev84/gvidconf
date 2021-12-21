@@ -18,6 +18,7 @@ const session = require("express-session")({
 })
 const {Server} = require("socket.io")
 const http = require("http")
+const moment = require("moment")
 
 const app= express()
 
@@ -55,7 +56,45 @@ sio.on("connection", (socket)=>{
 
     socket.on("message", message=>{
         let data = JSON.parse(message)
-        console.log(data.content)
+        console.log("MESSAGE : "+data.content)
+        if(socket.request.session.loggedin===true && socket.request.session.friends.find(i=>i.token === data.otherToken) !== undefined){
+            mongo.connect(url, (err, result)=>{
+                if(err){console.log(err)}
+                else{
+                    var db = result.db("gvidconf")
+                    let date = moment().format("MM/DD/YYYY h:mm a")
+                    db.collection("users").updateOne({token:socket.request.session.token}, {$push:{messages:{
+                        date,
+                        type:"outgoing",
+                        content:data.content,
+                        otherToken:data.otherToken,
+                        otherName:data.otherName
+                    }}}, (err, added)=>{
+                        if(err){console.log(err)}
+                        else{
+                            db.collection("users").updateOne({token:data.otherToken}, {$push:{messages:{
+                                date,
+                                type:"incoming",
+                                content:data.content,
+                                otherToken:socket.request.session.token,
+                                otherName:socket.request.session.name
+                            }}}, (err, added2)=>{
+                                if(err){console.log(err)}
+                                else{
+                                    let user = connectedusers.find(i=>i.token === data.otherToken)
+                                    if(user!==undefined)
+                                        sio.to(user.userId).emit("message",JSON.stringify({
+                                            content:data.content,
+                                            otherToken:socket.request.session.token,
+                                            otherName:socket.request.session.name
+                                        }))
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
         
     })
 }) 

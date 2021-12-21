@@ -1,7 +1,7 @@
 import React from "react"
 import { useDispatch } from "react-redux"
 
-export default function Contacts({receivedFriendsRequests, friends}){
+export default function Contacts({receivedFriendsRequests, friends, sock, current}){
 
     let dispatch = useDispatch()
 
@@ -52,6 +52,14 @@ export default function Contacts({receivedFriendsRequests, friends}){
         })
     }
 
+    let startconversation = (i)=>{
+        sock.emit("message", JSON.stringify({
+            otherToken:i.token,
+            otherName:i.name,
+            content:"Hello"
+        }))
+    }
+
     return(
         <div className="contacts">
             <h1>Contacts</h1>
@@ -82,7 +90,7 @@ export default function Contacts({receivedFriendsRequests, friends}){
                                 <div className="receivedfriendsrequest">
                                     <p>{i.name +`  (${i.token})`}</p>
                                     <button className="rejectfriend" onClick={()=>{deletefriend(i)}}>Delete</button>
-                                    <button className="acceptfriend">Start</button>
+                                    <button className="acceptfriend" onClick={()=>{startconversation(i)}}>Start</button>
                                 </div>
                             )
                         })

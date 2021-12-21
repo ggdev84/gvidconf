@@ -3,8 +3,11 @@ import { useSelector } from "react-redux"
 import Contacts from "./contacts"
 import Search from "./search"
 import Settings from "./settings"
+import sockioclient from "socket.io-client"
 
 export default function Messaging(){
+
+
 
     let logout = ()=>{
         fetch("/logout")
@@ -19,86 +22,32 @@ export default function Messaging(){
     const [current, setcurrent] = useState({})
     const [display, setdisplay] = useState(false)
     const [page, setpage] = useState("search")
+    const [reconnect, setreconnect] = useState(0)
+    const [msg, setmsg] = useState("")
+    const [sock, setsock] = useState({})
+
+    useEffect(()=>{
+        const socket = sockioclient()
+        socket.on("connection", ()=>{
+            alert("Connected")
+        })
+        socket.on("message", (msg)=>{
+            alert(msg)
+        })
+        setsock(socket)
+        console.log(sock)
+    }, [reconnect])
 
 
-    let data2 = [
-        {
-            name:"Emma",
-            status:"online",
-            photo:"https://images.assetsdelivery.com/compings_v2/puhhha/puhhha1608/puhhha160800271.jpg",
-            messages : [
-                {
-                    type:"incoming",
-                    content:"HELLO",
-                    date:"13/12/21 17:10"
-                },
-                {
-                    type:"outgoing",
-                    content:"How are you honey ?",
-                    date:"13/12/21 17:21"
-                },
-                {
-                    type:"incoming",
-                    content:"find and ya ?",
-                    date:"13/12/21 17:34"
-                },
-                {
-                    type:"incoming",
-                    content:"Are you coming to Mike's party ?",
-                    date:"13/12/21 17:35"
-                }
-            ]
-        },
-        {
-            name:"Laura",
-            status:"offline",
-            photo:"https://images.assetsdelivery.com/compings_v2/puhhha/puhhha1608/puhhha160800271.jpg",
-            messages : [
-                {
-                    type:"incoming",
-                    content:"Hi !",
-                    date:"13/12/21 17:10"
-                },
-                {
-                    type:"outgoing",
-                    content:"How are you ?",
-                    date:"13/12/21 17:21"
-                },
-                {
-                    type:"incoming",
-                    content:"find and ya ?",
-                    date:"13/12/21 17:34"
-                },
-                {
-                    type:"outgoing",
-                    content:"Fine thx",
-                    date:"13/12/21 17:35"
-                }
-            ]
-        },
-        {
-            name:"John",
-            status:"online",
-            photo:"https://images.assetsdelivery.com/compings_v2/puhhha/puhhha1608/puhhha160800271.jpg",
-            messages : [
-                {
-                    type:"incoming",
-                    content:"Hello dear friend",
-                    date:"13/12/21 17:10"
-                },
-                {
-                    type:"incoming",
-                    content:"How are you ?",
-                    date:"13/12/21 17:21"
-                },
-                {
-                    type:"incoming",
-                    content:"Are you there ?",
-                    date:"13/12/21 17:34"
-                }
-            ]
+    let sendmessage = ()=>{
+        let obj = {
+            content:msg,
+            otherToken:current.token,
+            otherName:current.name
         }
-    ]
+        sock.emit("message", JSON.stringify(obj))
+    }
+
 
     let userdata = useSelector(state=>state.userdata.userdata)
 
@@ -108,9 +57,18 @@ export default function Messaging(){
     else if(page==="settings")
         win=<Settings/>
     else if(page==="contacts")
-        win=<Contacts receivedFriendsRequests={userdata.receivedFriendsRequests} friends={userdata.friends} />
+        win=<Contacts receivedFriendsRequests={userdata.receivedFriendsRequests} friends={userdata.friends} sock={sock} />
     else
         win=<Search/>
+
+    let conversations = []
+    userdata.messages.forEach(i=>{
+        let found = conversations.find(el=>el.token===i.otherToken)
+        if(found===undefined)
+            conversations.push({name:i.otherName, token:i.otherToken})
+    })
+
+    let messages = userdata.messages.filter(i=>i.otherToken === current.token)
 
 
     return(
@@ -147,17 +105,17 @@ export default function Messaging(){
 
                 <div className="contactlist">
                     {
-                        userdata.friends.length !== 0 ?
-                        data2.map(i=>{
+                        conversations.length !== 0 ?
+                        conversations.map(i=>{
                             return(
-                                <div className="contact" onClick={()=>{setcurrent(i)}}>
+                                <div className="contact" onClick={()=>{setcurrent(i.token)}}>
                                     <div className="imgdiv">
-                                        <img src={i.photo} alt="Picture"/>
+                                        <h1>{i.name.split()[0]}</h1>
                                     </div>
-                                    <p>{i.name}</p>
-                                    <div className="status">
+                                    <p>{i}</p>
+{/*                                    <div className="status">
                                         <div  style={{backgroundColor:i.status==="online" ? "#004F89":"gray"}}></div>
-                                    </div>
+                            </div>*/}
                                 </div>
                             )
                         })
@@ -169,7 +127,7 @@ export default function Messaging(){
             </div>
 
             {
-                "messages" in current  ? 
+                messages.length !== 0 ? 
                 <div className="messagesdiv">
                 <div className="messagestitle">
                     <h2>{current.name}</h2>
@@ -178,25 +136,25 @@ export default function Messaging(){
                 </div>
                 <div className="messages">
                     {
-                        "messages" in current ? current.messages.map(i=>{
+                        messages.map(i=>{
                             return(
                                 <div className={"messageitem "+ (i.type==="incoming" ? "incoming":"outgoing")}>
                                     <p>{i.content}</p>
                                     <p>{i.date}</p>
                                 </div>
                             )
-                        }) : <p className="empty">Click on someone's name to start conversation</p>
+                        })
                     } 
                 </div>    
                 <div className="messagesinput">
-                    <input type="text" placeholder="Your message.."/>
-                    <button><img src={require("./images/send.png").default} alt="Send"/></button>
+                    <input type="text" placeholder="Your message.." value={msg} onChange={(e)=>{setmsg(e.target.value)}} />
+                    <button><img src={require("./images/send.png").default} alt="Send" onClick={sendmessage}/></button>
                 </div>
             </div> :
             <div className="emptymessagesdiv">
                 <p className="empty">Click on someone's name to start conversation</p>
             </div>
-            }
+            } 
         </div>
     )
 }

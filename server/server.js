@@ -3,26 +3,63 @@ const mongo = require("mongodb").MongoClient
 const url = "mongodb://localhost:27017"
 const bcrypt = require("bcrypt")
 const cors = require("cors")
-const session = require("express-session")
 const connect = require("connect-mongo")
-
-const app = express()
-
-app.use(session({
+const session = require("express-session")({
     store:connect.create({
         mongoUrl:url,
         dbName:"gvidconfsessions"
     }),
     secret:"1df85zed85ezd2f52e9dz5ed",
-    resave:true,
+    resave:false,
     saveUninitialized:false,
     cookie:{
         secure:false
-    }
-}))
+    }    
+})
+const {Server} = require("socket.io")
+const http = require("http")
+
+const app= express()
+
+const server = http.createServer(app)
+
+
+app.use(session)
 
 app.use(express.json())
 app.use(cors())
+
+const sio = new Server(server, {
+    cors:{
+        origin:"http://localhost:3000",
+        methods:["POST","GET"]
+    }
+})
+const wrap = middleware =>(socket, next)=>middleware(socket.request, {}, next);
+sio.use(wrap(session))
+
+let connectedusers = []
+sio.on("connection", (socket)=>{
+    console.log("New client : "+socket.id)
+    socket.emit("message","Welcome!")
+    connectedusers.push({
+        token:socket.request.session.token,
+        userId : socket.id
+    })
+    console.log(connectedusers)
+
+    socket.on("disconnect", ()=>{
+        connectedusers = connectedusers.filter(i=>i.userId !==socket.id)
+        console.log("Users:" +JSON.stringify(connectedusers))
+    })
+
+    socket.on("message", message=>{
+        let data = JSON.parse(message)
+        console.log(data.content)
+        
+    })
+}) 
+
 
 
 
@@ -46,7 +83,6 @@ app.get("/", (req, res)=>{
 
 app.post("/register", (req, res)=>{
     let data = req.body
-    console.log(data)
     if("name" in data && "email" in data && "password" in data && "confirmpassword" in data){
         let name = data.name
         let email  = data.email
@@ -154,7 +190,6 @@ app.post("/login", (req,res)=>{
 })
 
 app.get("/getdata", (req,res)=>{
-    console.log(req.session)
     if(req.session.loggedin === true){
         // Get all data
         mongo.connect(url, (err, result)=>{
@@ -198,7 +233,6 @@ app.post("/addfriend", (req,res)=>{
                 if(err){res.status(200).end("Server error. Please try later.")}
                 else{
                     var db = result.db("gvidconf")
-                    console.log("Token "+req.session.token)
                     let obj={
                         name:req.session.name,
                         token:req.session.token
@@ -279,7 +313,6 @@ app.post("/getallcontacts", (req,res)=>{
     if(req.session.loggedin===true){
         if("search" in req.body){
             let search = req.body.search
-            console.log(search)
             mongo.connect(url,(err, result)=>{
                 if(err){res.status(200).end("Server error. Please try later.")}
                 else{
@@ -293,7 +326,6 @@ app.post("/getallcontacts", (req,res)=>{
                         }, {projection:{_id:0,name:1, token:1}}).toArray((err, list)=>{
                         if(err){res.status(200).end("Server error. Please try later.")}
                         else{
-                            console.log(list)
                             res.status(200).end(JSON.stringify({userslist:list}))
                         }
                     })
@@ -375,4 +407,4 @@ app.post("/rejectfriend", (req,res)=>{
 
 
 
-app.listen(8080)
+server.listen(8080)

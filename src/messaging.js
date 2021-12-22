@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import Contacts from "./contacts"
 import Search from "./search"
 import Settings from "./settings"
 import sockioclient from "socket.io-client"
 import * as actions from "./actions"
+import moment from "moment"
 
 export default function Messaging(){
 
     let dispatch = useDispatch()
     let sock = useSelector(state=>state.sock.sock)
     let userdata = useSelector(state=>state.userdata.userdata)
-
+    let divref = useRef(null)
 
     let logout = ()=>{
         fetch("/logout")
@@ -37,8 +38,8 @@ export default function Messaging(){
         })
         socket.on("message", (msg)=>{
             if(msg.includes("{")){
-                let m = JSON.parse(msg).content
-                alert(m)
+                let obj = JSON.parse(msg)
+                console.log(obj)
             }
             else{
                 alert(msg)
@@ -46,7 +47,6 @@ export default function Messaging(){
         })
         dispatch(actions.changesock(socket))
     }, [reconnect])
-
 
     
     let sendmessage = ()=>{
@@ -56,6 +56,7 @@ export default function Messaging(){
             otherName:current.name
         }
         sock.emit("message", JSON.stringify(obj))
+        divref.current.scrollTop =  divref.current.scrollHeight
     }
     
     
@@ -95,7 +96,7 @@ export default function Messaging(){
                 </div>
             </div>
 
-            <div className="mainmenu">
+            <div className="mainmenu" >
                 <h1><img src={require("./images/logoicon.svg").default} alt="icon"/> Gvidconf</h1>
                 <h3>{userdata.name}</h3>
                 <div className="mainmenubtns">
@@ -122,7 +123,9 @@ export default function Messaging(){
                         conversations.length !== 0 ?
                         conversations.map(i=>{
                             return(
-                                <div className="contact" onClick={()=>{setcurrent(i)}}>
+                                <div className="contact" onClick={()=>{
+                                    setcurrent(i)
+                                }}>
                                     <div className="imgdiv">
                                         <img src={require("./images/user.png").default} alt="User : "/>
                                     </div>
@@ -148,7 +151,7 @@ export default function Messaging(){
                     <button><img src={require("./images/phone-call.png").default} alt="Call"/> </button>
                     <button><img src={require("./images/video-camera.png").default} alt="Video call"/> </button>
                 </div>
-                <div className="messages">
+                <div className="messages" ref={divref} onLoad={()=>{divref.current.scrollTop = divref.current.scrollHeight}}>
                     {
                         messages.map(i=>{
                             return(
@@ -159,6 +162,7 @@ export default function Messaging(){
                             )
                         })
                     } 
+                    
                 </div>    
                 <div className="messagesinput">
                     <input type="text" placeholder="Your message.." value={msg} onChange={(e)=>{setmsg(e.target.value)}} />

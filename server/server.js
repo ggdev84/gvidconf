@@ -42,7 +42,6 @@ sio.use(wrap(session))
 let connectedusers = []
 sio.on("connection", (socket)=>{
     console.log("New client : "+socket.id)
-    socket.emit("message","Welcome!")
     connectedusers.push({
         token:socket.request.session.token,
         userId : socket.id
@@ -86,8 +85,18 @@ sio.on("connection", (socket)=>{
                                         sio.to(user.userId).emit("message",JSON.stringify({
                                             content:data.content,
                                             otherToken:socket.request.session.token,
-                                            otherName:socket.request.session.name
+                                            otherName:socket.request.session.name,
+                                            type:"incoming",
+                                            date
                                         }))
+
+                                    sio.to(socket.id).emit("message",JSON.stringify({
+                                        content:data.content,
+                                        otherToken:data.otherToken,
+                                        otherName:data.otherName,
+                                        date,
+                                        type:"outgoing"
+                                    }))
                                 }
                             })
                         }

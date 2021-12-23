@@ -6,13 +6,13 @@ import Settings from "./settings"
 import sockioclient from "socket.io-client"
 import * as actions from "./actions"
 import moment from "moment"
+import Scrollbottom from "./scrollbottom"
 
 export default function Messaging(){
 
     let dispatch = useDispatch()
     let sock = useSelector(state=>state.sock.sock)
-    let userdata = useSelector(state=>state.userdata.userdata)
-    let divref = useRef(null)
+    let userdata = useSelector(state=>state.userdata)
 
     let logout = ()=>{
         fetch("/logout")
@@ -29,6 +29,9 @@ export default function Messaging(){
     const [page, setpage] = useState("search")
     const [reconnect, setreconnect] = useState(0)
     const [msg, setmsg] = useState("")
+    const [conversations, setconversations] = useState([])
+    const [messages, setmessages] = useState([])
+
 
 
     useEffect(()=>{
@@ -39,7 +42,9 @@ export default function Messaging(){
         socket.on("message", (msg)=>{
             if(msg.includes("{")){
                 let obj = JSON.parse(msg)
-                console.log(obj)
+                dispatch(actions.addmessage(obj))
+                
+
             }
             else{
                 alert(msg)
@@ -56,9 +61,8 @@ export default function Messaging(){
             otherName:current.name
         }
         sock.emit("message", JSON.stringify(obj))
-        divref.current.scrollTop =  divref.current.scrollHeight
+        setmsg("")
     }
-    
     
 
 
@@ -73,16 +77,25 @@ export default function Messaging(){
     else
         win=<Search/>
 
-
-    let conversations = []
-    userdata.messages.forEach(i=>{
-        let found = conversations.find(el=>el.token===i.otherToken)
-        if(found===undefined)
-            conversations.push({name:i.otherName, token:i.otherToken})
-    })
+    
     
 
-    let messages = userdata.messages.filter(i=>i.otherToken === current.token)
+
+    useEffect(()=>{
+        let tmp = [...conversations]
+        userdata.messages.forEach(i=>{
+            let found = tmp.find(el=>el.token===i.otherToken)
+            if(found===undefined)
+                tmp.push({name:i.otherName, token:i.otherToken})
+        })
+        setconversations(tmp)
+        
+    
+        let tmpmessages = userdata.messages.filter(i=>i.otherToken === current.token)
+        setmessages(tmpmessages)
+
+
+    }, [current, userdata])
 
     
 
@@ -151,7 +164,7 @@ export default function Messaging(){
                     <button><img src={require("./images/phone-call.png").default} alt="Call"/> </button>
                     <button><img src={require("./images/video-camera.png").default} alt="Video call"/> </button>
                 </div>
-                <div className="messages" ref={divref} onLoad={()=>{divref.current.scrollTop = divref.current.scrollHeight}}>
+                <div className="messages">
                     {
                         messages.map(i=>{
                             return(
@@ -162,10 +175,10 @@ export default function Messaging(){
                             )
                         })
                     } 
-                    
+                    <Scrollbottom/>
                 </div>    
                 <div className="messagesinput">
-                    <input type="text" placeholder="Your message.." value={msg} onChange={(e)=>{setmsg(e.target.value)}} />
+                    <input type="text" placeholder="Your message.." value={msg} onChange={(e)=>{setmsg(e.target.value)}} onKeyUp={(e)=>{if(e.key==="Enter"){sendmessage()}}}/>
                     <button><img src={require("./images/send.png").default} alt="Send" onClick={sendmessage}/></button>
                 </div>
             </div> :

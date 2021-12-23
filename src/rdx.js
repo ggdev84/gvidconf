@@ -22,11 +22,24 @@ let tmpuserdata = {
     email:""
 }
 
-export const userdata = (state={userdata:tmpuserdata}, action)=>{
+export const userdata = (state=tmpuserdata, action)=>{
     if(action.type==="CHANGEUSERDATA"){
+        let data  = action.payload
         state={
             ...state,
-            userdata:action.payload
+            friends:data.friends,
+            name:data.name,
+            token:data.token,
+            receivedFriendsRequests:data.receivedFriendsRequests,
+            sentFriendsRequests:data.sentFriendsRequests,
+            messages:data.messages,
+            email:data.email
+        }
+    }
+    if(action.type==="ADDMESSAGE"){
+        state ={
+            ...state,
+            messages:[...state.messages, action.payload]
         }
     }
     return state

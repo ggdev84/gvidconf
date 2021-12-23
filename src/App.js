@@ -17,7 +17,7 @@ function App() {
     .then(data=>{
         if(data.includes("logged in")){
             if(window.location.href.includes("/main") ===false){
-              window.location =  "http://localhost:3000/main"
+              window.location =  "http://192.168.1.68:3000/main"
             }
         }
     })

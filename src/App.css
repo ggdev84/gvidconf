@@ -16,7 +16,6 @@ body{
   padding:0;
   margin:0;
   --maincolor:#004F89;
-  
 }
 
 
@@ -171,6 +170,7 @@ body *{
   margin:0;
   padding: 0;
   border-radius: 15px;
+  overflow-y: auto;
 }
 
 .mainmenu h1{
@@ -187,7 +187,6 @@ body *{
   width:35px;
   height:35px;
   margin:0;
-
 }
 
 .mainmenu h3{
@@ -202,12 +201,12 @@ body *{
   flex-direction: row;
   justify-content: space-between;
   margin:50px auto;
-
+  height:40px;
 }
 
 .mainmenubtns button{
   flex:1;
-  height:40px;
+  height:100%;
   cursor: pointer;
   border:none;
   background-color: transparent;
@@ -220,8 +219,6 @@ body *{
 .contactlist{
   width:90%;
   padding:10px 5%;
-  height:64%;
-  overflow-y: auto;
 }
 
 .contactlist p{
@@ -281,7 +278,7 @@ body *{
   height:100%;
   background-color: rgb(240, 240, 240);
   border-radius: 10px;
-  
+  overflow-y: auto;
 }
 
 .messagestitle{

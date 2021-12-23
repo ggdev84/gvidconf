@@ -11,3 +11,10 @@ export const changesock = (payload)=>{
         payload
     }
 }
+
+export const addmessage = (payload)=>{
+    return{
+        type:"ADDMESSAGE",
+        payload
+    }
+}

@@ -42,10 +42,18 @@ sio.use(wrap(session))
 let connectedusers = []
 sio.on("connection", (socket)=>{
     console.log("New client : "+socket.id)
-    connectedusers.push({
-        token:socket.request.session.token,
-        userId : socket.id
-    })
+    let current = connectedusers.find(i=>i.token===socket.request.session.token)
+    if(current===undefined){
+        connectedusers.push({
+            token:socket.request.session.token,
+            userId : socket.id
+        })
+    }
+    else{
+        let index = connectedusers.findIndex(i=>i.token===socket.request.session.token)
+        connectedusers[index].userId = socket.id
+    }
+    
     console.log(connectedusers)
 
     socket.on("disconnect", ()=>{

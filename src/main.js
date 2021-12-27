@@ -18,7 +18,7 @@ export default function Main(){
             if(data.includes("{")){
                 dispatch(changeruserdata(JSON.parse(data)))
                 if(window.location.href.includes("/main") ===false){
-                  window.location =  "http://192.168.1.68:3000/main"
+                  window.location =  "http://localhost:3000/main"
                 }
             }
         })

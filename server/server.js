@@ -270,7 +270,7 @@ app.get("/getdata", (req,res)=>{
 })
 
 app.get("/amiloggedin", (req,res)=>{
-    if(req.session.loggedin)
+    if(req.session.loggedin===true)
         res.status(200).end("logged in")
     else
         res.status(200).end("You are not connected.")
@@ -459,7 +459,6 @@ app.post("/rejectfriend", (req,res)=>{
         res.status(200).end("You are not logged in.")
     }
 })
-
 
 
 

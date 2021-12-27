@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import * as actions from "./actions"
 
 export default function Search(){
@@ -8,6 +8,7 @@ export default function Search(){
     const [search, setsearch] = useState("")
 
     let dispatch = useDispatch()
+    let userdata=useSelector(state=>state.userdata)
 
     let searchcontacts = ()=>{
         fetch("/getallcontacts",{
@@ -48,8 +49,8 @@ export default function Search(){
         <div className="search">
             <h1>Add contact</h1>
             <div className="searchinputdiv">
-                <input type="text" placeholder="Search people" value={search} onChange={(e)=>{setsearch(e.target.value)}}/>
-                <button className="searchbtn" onClick={searchcontacts}>{">"}</button>
+                <input type="text" placeholder="Search people" value={search} onKeyUp={(e)=>{if(e.key==="Enter"){searchcontacts()}}} onChange={(e)=>{setsearch(e.target.value)}}/>
+                <button className="searchbtn" onClick={searchcontacts} >{">"}</button>
             </div>
             <div className="receivedFriendsRequests">
                 {
@@ -58,7 +59,7 @@ export default function Search(){
                         return(
                             <div className="receivedfriendsrequest">
                                 <p>{i.name}{`  (${i.token})`}</p>
-                                <button onClick={()=>{addfriend(i.token)}}>Send</button>
+                                <button disabled={userdata.friends.find(el=>el.token===i.token)!==undefined ? true:false} onClick={()=>{addfriend(i.token)}}>Send</button>
                             </div>
                         )
                     }) : ""

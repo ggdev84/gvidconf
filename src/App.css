@@ -24,6 +24,10 @@ body *{
   outline: none;
 }
 
+button:disabled{
+  opacity: 0.6;
+}
+
 .App{
   margin:0;
   padding:0;

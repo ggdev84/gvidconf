@@ -35,6 +35,14 @@ export default function Messaging(){
 
 
     useEffect(()=>{
+
+        if(!Notification)
+            alert("Notifications not supported")
+        else if(Notification.permission !== "granted"){
+            Notification.requestPermission()
+        }
+
+
         const socket = sockioclient() 
         socket.on("connection", ()=>{
             alert("Connected")
@@ -43,7 +51,11 @@ export default function Messaging(){
             if(msg.includes("{")){
                 let obj = JSON.parse(msg)
                 dispatch(actions.addmessage(obj))
-                
+                if(obj.type==="incoming"){
+                    let notification = new Notification("New message from "+obj.otherName,{
+                        body:obj.content
+                    })
+                }
 
             }
             else{
@@ -51,6 +63,8 @@ export default function Messaging(){
             }
         })
         dispatch(actions.changesock(socket))
+        
+
     }, [reconnect])
 
     

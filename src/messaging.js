@@ -77,6 +77,14 @@ export default function Messaging(){
         sock.emit("message", JSON.stringify(obj))
         setmsg("")
     }
+
+    let iswriting = ()=>{
+        let obj = {
+            otherToken:current.token,
+            otherName:current.name
+        }
+        sock.emit("writing",JSON.stringify(obj))
+    }
     
 
 
